@@ -1,1 +1,0 @@
-/usr/bin/cc -fsanitize=address -pthread CMakeFiles/reaction_timer.dir/src/main.c.o CMakeFiles/reaction_timer.dir/src/time.c.o -o reaction_timer  ../hal/libhal.a 
