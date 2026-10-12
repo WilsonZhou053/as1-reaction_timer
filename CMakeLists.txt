@@ -1,21 +1,23 @@
-# CMake Build Configuration for root of project
 cmake_minimum_required(VERSION 3.18)
 project(reaction_timer VERSION 1.0 DESCRIPTION "Reaction Timer Project" LANGUAGES C)
 
-# Compiler options (inherited by sub-folders)
 set(CMAKE_C_STANDARD 11)
-add_compile_options(-Wall -Werror -Wpedantic -Wextra)
-add_compile_options(-fdiagnostics-color)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
 
-# Enable address sanitizer
-# (Comment this out to make your code faster)
-add_compile_options(-fsanitize=address)
-add_link_options(-fsanitize=address)
+option(ENABLE_ADDRESS_SANITIZER "Enable AddressSanitizer for host debugging" OFF)
 
-# Enable PThread library for linking
-add_compile_options(-pthread)
-add_link_options(-pthread)
+add_compile_options(-Wall -Wextra -Wpedantic)
 
-# What folders to build
-add_subdirectory(hal)  
+# clock_gettime() and nanosleep() are POSIX interfaces.
+add_compile_definitions(_POSIX_C_SOURCE=200809L)
+
+if(ENABLE_ADDRESS_SANITIZER)
+    add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
+    add_link_options(-fsanitize=address)
+endif()
+
+find_package(Threads REQUIRED)
+
+add_subdirectory(hal)
 add_subdirectory(app)
