@@ -1,15 +1,28 @@
-# Build the app, using the HAL
+add_executable(reaction_timer
+    src/main.c
+    src/app_time.c
+)
 
-include_directories(include)
-file(GLOB MY_SOURCES "src/*.c")
-add_executable(reaction_timer ${MY_SOURCES})
+target_include_directories(reaction_timer
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
-# Make use of the HAL library
-target_link_libraries(reaction_timer LINK_PRIVATE hal)
+target_link_libraries(reaction_timer PRIVATE hal Threads::Threads)
 
-# Copy executable to final location
-add_custom_command(TARGET reaction_timer POST_BUILD 
-  COMMAND "${CMAKE_COMMAND}" -E copy 
-     "$<TARGET_FILE:reaction_timer>"
-     "$ENV{HOME}/ensc351/public/myApps/reaction_timer" 
-  COMMENT "Copying ARM executable to public NFS directory")
+# Copy the executable to the host directory exported over NFS, when available.
+set(MYAPPS_DIR "$ENV{HOME}/ensc351/public/myApps")
+if(CMAKE_CROSSCOMPILING AND EXISTS "$ENV{HOME}/ensc351/public")
+    add_custom_command(TARGET reaction_timer POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "${MYAPPS_DIR}"
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                "$<TARGET_FILE:reaction_timer>"
+                "${MYAPPS_DIR}/reaction_timer"
+        COMMENT "Copying reaction_timer to ${MYAPPS_DIR} for NFS access"
+        VERBATIM
+    )
+elseif(NOT CMAKE_CROSSCOMPILING)
+    message(STATUS "Native host build: not copying host executable to the NFS target directory")
+else()
+    message(STATUS "NFS output directory not found; executable remains at: ${CMAKE_CURRENT_BINARY_DIR}/reaction_timer")
+endif()
