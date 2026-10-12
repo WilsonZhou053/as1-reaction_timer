@@ -1,10 +1,13 @@
-# CMakeLists.txt for HAL
-# Build a library (`hal`) which exposes the header files as "hal/*.h"
-# Use header as: #include "hal/led.h", #include "hal/joystick.h", etc.
+# Hardware abstraction layer. Only compile modules that have implementations
+# and matching public headers in this project.
+add_library(hal STATIC
+    src/led.c
+    src/joystick.c
+)
 
-include_directories(include)
-file(GLOB MY_SOURCES "src/*.c")
+target_include_directories(hal
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
-add_library(hal STATIC ${MY_SOURCES})
-
-target_include_directories(hal PUBLIC include)
+target_link_libraries(hal PUBLIC Threads::Threads)
