@@ -1,5 +1,5 @@
 #include "app_time.h"
-#include <time.h> // Includes the standard system time library
+#include <time.h>
 
 long long time_getTimeInMs(void)
 {
