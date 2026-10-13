@@ -5,7 +5,6 @@
 
 static bool is_initialized = false;
 
-// Helper function to write a value (0 or 1) to a given LED sysfs brightness file
 static void write_led_file(const char *path, bool on)
 {
     FILE *f = fopen(path, "w");
