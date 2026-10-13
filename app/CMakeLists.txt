@@ -10,7 +10,7 @@ target_include_directories(reaction_timer
 
 target_link_libraries(reaction_timer PRIVATE hal Threads::Threads)
 
-# Copy the executable to the host directory exported over NFS, when available.
+
 set(MYAPPS_DIR "$ENV{HOME}/ensc351/public/myApps")
 if(CMAKE_CROSSCOMPILING AND EXISTS "$ENV{HOME}/ensc351/public")
     add_custom_command(TARGET reaction_timer POST_BUILD
