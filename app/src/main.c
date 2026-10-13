@@ -8,22 +8,21 @@
 
 int main(void)
 {
-    // Initialize random number generator
     srand((unsigned int)time(NULL));
 
-    // Initialize hardware modules
+    // Initialize HAL
     led_init();
     joystick_init();
 
-    // Display welcome message and instructions
+    // Welcome Message 
     printf("Hello embedded world, from Wilson (Si Hang) Zhou!\n");
     printf("When the LEDs light up, press the joystick in that direction!\n");
     printf("(Press left or right to exit)\n\n");
 
-    long long best_time = 0; // Tracks the fastest correct response time
+    long long best_time = 0; 
 
     while (true) {
-        // Step 1: Print "get ready" and flash LEDs 4 times (Green 250ms, Red 250ms)
+        // Start program
         printf("Get ready...\n");
         for (int i = 0; i < 4; i++) {
             led_greenOn(true);
@@ -35,28 +34,27 @@ int main(void)
             led_redOn(false);
         }
 
-        // Step 2: If joystick is currently pressed up/down, wait until released
+        // Check for joystick being held
         bool printed_let_go = false;
         while (joystick_readDirection() == joystickUp || joystick_readDirection() == joystickDown) {
             if (!printed_let_go) {
-                printf("Please let go of joystick\n");
+                printf("Please let go of joystick: \n");
                 printed_let_go = true;
             }
             time_sleepForMs(50);
         }
-
-        // Step 3: Wait a random amount of time between 0.5s (500ms) and 3.0s (3000ms)
+        // Random delay before reaction speed test
         long long random_delay = 500 + (rand() % 2501);
         time_sleepForMs(random_delay);
 
-        // Step 4: If pressed too soon after delay, report and restart loop
+        // Check for joystick being moved early
         if (joystick_readDirection() == joystickUp || joystick_readDirection() == joystickDown) {
             printf("too soon\n\n");
             continue;
         }
 
-        // Step 5: Pick random direction (Up or Down)
-        int choice = rand() % 2; // 0 for Up, 1 for Down
+        // Pick up or down
+        int choice = rand() % 2;
         joystickDirection target_dir = (choice == 0) ? joystickUp : joystickDown;
 
         if (target_dir == joystickUp) {
@@ -67,7 +65,7 @@ int main(void)
             led_redOn(true);
         }
 
-        // Step 6: Time how long it takes for the user to press the joystick (timeout after 5s)
+        // Time user correct input time
         long long start_time = time_getTimeInMs();
         joystickDirection user_press = joystick_readDirection();
 
@@ -81,13 +79,13 @@ int main(void)
                 return 0;
             }
             user_press = joystick_readDirection();
-            time_sleepForMs(10); // Small poll delay to prevent CPU saturation
+            time_sleepForMs(10); 
         }
 
         long long reaction_time = time_getTimeInMs() - start_time;
-        led_turnOffAll(); // Turn off prompt LED immediately
+        led_turnOffAll(); 
 
-        // Step 7: Process user's input
+        // Process input
         if (user_press == joystickLeft || user_press == joystickRight) {
             printf("User selected to quit.\n");
             break;
@@ -99,7 +97,6 @@ int main(void)
             }
             printf("Your reaction time was %lldms; best so far in game is %lldms.\n", reaction_time, best_time);
 
-            // Flash green LED 5 times in 1 second (100ms on, 100ms off)
             for (int i = 0; i < 5; i++) {
                 led_greenOn(true);
                 time_sleepForMs(100);
@@ -109,7 +106,6 @@ int main(void)
         } else {
             printf("Incorrect.\n");
 
-            // Flash red LED 5 times in 1 second (100ms on, 100ms off)
             for (int i = 0; i < 5; i++) {
                 led_redOn(true);
                 time_sleepForMs(100);
@@ -121,7 +117,6 @@ int main(void)
         printf("\n");
     }
 
-    // Ensure clean shutdown and LEDs left off per requirements
     led_cleanup();
     joystick_cleanup();
 
