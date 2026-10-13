@@ -1,5 +1,3 @@
-# Hardware abstraction layer. Only compile modules that have implementations
-# and matching public headers in this project.
 add_library(hal STATIC
     src/led.c
     src/joystick.c
