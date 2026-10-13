@@ -9,7 +9,6 @@ option(ENABLE_ADDRESS_SANITIZER "Enable AddressSanitizer for host debugging" OFF
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
-# clock_gettime() and nanosleep() are POSIX interfaces.
 add_compile_definitions(_POSIX_C_SOURCE=200809L)
 
 if(ENABLE_ADDRESS_SANITIZER)
